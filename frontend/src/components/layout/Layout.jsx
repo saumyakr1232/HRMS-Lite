@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { checkHealth } from '../../api/client';
 import Sidebar from './Sidebar';
 
 const pageTitles = {
@@ -11,6 +12,18 @@ const pageTitles = {
 
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(null); // null = checking
+
+  useEffect(() => {
+    let cancelled = false;
+    const ping = async () => {
+      const ok = await checkHealth();
+      if (!cancelled) setIsOnline(ok);
+    };
+    ping();
+    const interval = setInterval(ping, 30_000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
   const location = useLocation();
 
   const title = pageTitles[location.pathname] ||
@@ -34,9 +47,17 @@ export default function Layout({ children }) {
 
           <div className="flex-1" />
 
+
           <div className="hidden sm:flex items-center gap-2 text-xs text-ink-faint">
-            <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            System Online
+            <div
+              className={`w-2 h-2 rounded-full ${isOnline === null
+                  ? 'bg-yellow-400 animate-pulse'
+                  : isOnline
+                    ? 'bg-success animate-pulse'
+                    : 'bg-red-500'
+                }`}
+            />
+            {isOnline === null ? 'Checking…' : isOnline ? 'System Online' : 'System Offline'}
           </div>
         </header>
 
