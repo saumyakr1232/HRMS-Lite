@@ -24,6 +24,11 @@ router = APIRouter()
 )
 def mark_attendance(payload: AttendanceCreate, db: Session = Depends(get_db)):
     """Mark attendence for an employee on a given date"""
+    if payload.date > date.today():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Cannot mark attendance for a future date.",
+        )
     # Verify employee exists
     employee = (
         db.query(Employee).filter(Employee.employee_id == payload.employee_id).first()

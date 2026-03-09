@@ -15,7 +15,14 @@ class EmployeeCreate(BaseModel):
         description="Unique employee identifier (alphanumeric, dash, underscore)",
         examples=["EMP001"],
     )
-    full_name: str = Field(..., min_length=1, max_length=100, examples=["John Doe"])
+    full_name: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        pattern=r"^[A-Za-z\s''\-]+$",
+        description="Employee full name (letters, spaces, hyphens, apostrophes only)",
+        examples=["John Doe"],
+    )
     email: EmailStr = Field(..., examples=["john.doe@company.com"])
     department: str = Field(..., min_length=1, max_length=50, examples=["Engineering"])
 
