@@ -17,8 +17,12 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 load_dotenv()
 
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "mysql+pymysql://hrms_user:hrms_pass@localhost:3306/hrms_lite"
+    "DATABASE_URL", "postgresql://hrms_user:hrms_pass@localhost:5432/hrms_lite"
 )
+
+# Render uses postgres:// but SQL Alchemy requires postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=3600)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -45,7 +49,10 @@ class Attendance(Base):
         nullable=False,
     )
     date = Column(Date, nullable=False)
-    status = Column(Enum("Present", "Absent", name="attendance_status"), nullable=False)
+    status = Column(
+        Enum("Present", "Absent", name="attendance_status", create_constraint=True),
+        nullable=False,
+    )
     created_at = Column(DateTime, server_default=func.now())
 
     __table_args__ = (
