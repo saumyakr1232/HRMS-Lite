@@ -1,8 +1,3 @@
-/**
- * Centralized API client for HRMS Lite.
- * Uses native fetch with a configurable base URL.
- */
-
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 async function request(endpoint, options = {}) {
@@ -28,3 +23,12 @@ export const api = {
     request(endpoint, { method: 'POST', body: JSON.stringify(data) }),
   delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
 };
+
+export async function checkHealth() {
+  try {
+    const res = await fetch(`${API_BASE}/health`);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
