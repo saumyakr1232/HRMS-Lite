@@ -20,13 +20,18 @@ export default function EmployeeDetail() {
   const { records, summary, loading: attLoading, markAttendance, refetch } = useAttendance(id);
 
   const [showMarkModal, setShowMarkModal] = useState(false);
-  const [markDate, setMarkDate] = useState(new Date().toISOString().split('T')[0]);
+  const today = new Date().toISOString().split('T')[0];
+  const [markDate, setMarkDate] = useState(today);
   const [markStatus, setMarkStatus] = useState('Present');
   const [submitting, setSubmitting] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
 
   const handleMark = async (e) => {
     e.preventDefault();
+    if (markDate > today) {
+      toast.error('Cannot mark attendance for a future date');
+      return;
+    }
     setSubmitting(true);
     try {
       await markAttendance({ employee_id: id, date: markDate, status: markStatus });
@@ -178,6 +183,7 @@ export default function EmployeeDetail() {
             required
             type="date"
             value={markDate}
+            max={today}
             onChange={(e) => setMarkDate(e.target.value)}
           />
           <div className="flex flex-col gap-1.5">

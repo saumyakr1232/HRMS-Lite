@@ -37,6 +37,7 @@ export default function Employees() {
     if (!form.employee_id.trim()) errors.employee_id = 'Employee ID is required';
     else if (!/^[A-Za-z0-9_-]+$/.test(form.employee_id)) errors.employee_id = 'Only alphanumeric, dash, underscore';
     if (!form.full_name.trim()) errors.full_name = 'Full name is required';
+    else if (!/^[A-Za-z\s''-]{2,}$/.test(form.full_name.trim())) errors.full_name = 'Name must contain only letters';
     if (!form.email.trim()) errors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Invalid email format';
     if (!form.department) errors.department = 'Department is required';

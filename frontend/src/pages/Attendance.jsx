@@ -15,7 +15,8 @@ export default function Attendance() {
   const toast = useToast();
 
   const [selectedEmployee, setSelectedEmployee] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const today = new Date().toISOString().split('T')[0];
+  const [date, setDate] = useState(today);
   const [status, setStatus] = useState('Present');
   const [submitting, setSubmitting] = useState(false);
 
@@ -50,6 +51,10 @@ export default function Attendance() {
     }
     if (!date) {
       toast.error('Please select a date');
+      return;
+    }
+    if (date > today) {
+      toast.error('Cannot mark attendance for a future date');
       return;
     }
     setSubmitting(true);
@@ -112,6 +117,7 @@ export default function Attendance() {
                 required
                 type="date"
                 value={date}
+                max={today}
                 onChange={(e) => setDate(e.target.value)}
               />
 
