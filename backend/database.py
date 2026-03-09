@@ -62,7 +62,11 @@ class Attendance(Base):
 
 def create_tables():
     """Create all tables in the database."""
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        # Handle race condition where multiple workers try
+        pass
 
 
 def get_db():
